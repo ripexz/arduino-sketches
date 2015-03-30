@@ -27,11 +27,13 @@ void setup() {
 
 void loop()
 {
-  long duration, mm;
+  long duration, cm;
   
   pos = pos + (degs * dir);
   servo.write(pos);
-  po
+  if (pos == 180 || pos == 0) {
+    dir *= -1;
+  }
   
   digitalWrite(vccPin, HIGH);
  
@@ -47,11 +49,13 @@ void loop()
   duration = pulseIn(echoPin, HIGH);
 
   // convert the time into a distance
-  mm = microsecondsToCentimeters(duration) / 10;
+  cm = microsecondsToCentimeters(duration);
 
-  Serial.println(mm);
+  Serial.print(pos);
+  Serial.print(" ");
+  Serial.println(cm);
   
-  delay(15);
+  delay(100);
 }
 
 long microsecondsToCentimeters(long microseconds) {
