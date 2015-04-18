@@ -24,13 +24,18 @@ int gndPin = 5;       //attach pin 5 to GND
 
 int count = 0;
 
-long baseline = 0;     //baseline distance
-long tempBaseline = 0; //temp baseline
-int setupSamples = 30; //baseline setup samples
-long threshold = 5;    //threshold from baseline to count
-int initialSetup = 0;  //has been stabilized at least once
+long baseline = 0;                 //baseline distance
+long tempBaseline = 0;             //temp baseline
 
-int incrSamples = 3;
+int setupSamples = 0;
+int setupSampleThreshold = 30;     //baseline setup samples
+
+int incrementSamples = 0;
+int incrementSampleThreshold = 5;  //samples to count a person
+
+long distanceThreshold = 5.0;        //min change in distance to count
+
+int initialSetup = 0;              //has been stabilized at least once
 
 void setup() {
   // setup sensor
@@ -48,6 +53,7 @@ void setup() {
   pinMode(13, OUTPUT);
   writeDot(0);  // start with the "dot" off
   sevenSegWrite(count);
+  Serial.begin(9600);
 }
 
 void flashDot() {
@@ -94,49 +100,65 @@ void loop() {
 
   // convert the time into a distance
   cm = microsecondsToCentimeters(duration);
-  
-  if (!initialSetup) {
-    writeDot(0);
-    if (setupSamples > 0) {
-      setupSamples--;
-    }
-    else {
-      baseline = cm;
-      setupSamples = 30;
-      initialSetup = 1;
-      flashDot();
-    }
-  }
-  
-  if (abs(baseline - cm) >= threshold && initialSetup) {
-    writeDot(1);
-    if (incrSamples > 0) {
-      incrSamples--;
-    }
-    else {
-      count++;
-      if (count > 9) {
-        count = 0;
-      }
-      sevenSegWrite(count);
-      incrSamples = 3;
-    }
-    if (abs(tempBaseline - cm) < threshold) {
-      if (setupSamples > 0) {
-        tempBaseline = cm;
-        setupSamples--;
-      }
-      else {
-        baseline = cm;
-        setupSamples = 30;
-        flashDot();
-      }
-    }
+  setupSamples++;
+
+  if (setupSamples >= setupSampleThreshold) {
+    baseline = cm;
+    initialSetup = 1;
+    setupSamples = 0;
+    flashDot();
   }
   else {
-    writeDot(0);
+    if (abs(tempBaseline - cm) < distanceThreshold) {
+      if (initialSetup) {
+        if (abs(baseline - cm) >= distanceThreshold) {
+          setupSamples++;
+        }
+        else {
+          setupSamples = 0;
+        }
+      }
+      else {
+        setupSamples++;
+      }
+    }
+    else {
+      setupSamples = 0;
+    }
   }
-    
+  tempBaseline = cm;
+
+  if (initialSetup) {
+    if (abs(baseline - cm) >= distanceThreshold) {
+      writeDot(1);
+      incrementSamples++;
+      if (incrementSamples >= incrementSampleThreshold) {
+        incrementSamples = 0;
+        count++;
+        if (count > 9) {
+          count = 0;
+        }
+        sevenSegWrite(count);
+      }
+    }
+    else {
+      writeDot(0);
+      incrementSamples = 0;
+    }
+  }
+
+  Serial.print("cm: ");
+  Serial.print(cm);
+  Serial.print("; baseline: ");
+  Serial.print(baseline);
+  Serial.print("; tempBaseline: ");
+  Serial.print(tempBaseline);
+  Serial.print("; setupSamples: ");
+  Serial.print(setupSamples);
+  Serial.print("; incrementSamples: ");
+  Serial.print(incrementSamples);
+  Serial.println("");
+  
   delay(100);
 }
 
