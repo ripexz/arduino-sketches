@@ -9,15 +9,15 @@ x = []
 y = []
 
 while samples > 0:
-	line = ser.readline()
-	ln = line.split()
-	if len(ln) == 2:
-		x.append(ln[0])
-		y.append(ln[1])
-		samples -= 1
-		print samples, "samples left to collect"
+  line = ser.readline()
+  ln = line.split()
+  if len(ln) == 2:
+    x.append(ln[0])
+    y.append(ln[1])
+    samples -= 1
+    print(samples, "samples left to collect")
 
-print "Generating graph"
+print("Generating graph")
 fig = plt.figure()
 plt.title("Angle vs Distance")
 plt.xlabel("Angle (deg)")

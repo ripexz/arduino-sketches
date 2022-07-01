@@ -4,17 +4,18 @@
 *    and a 7 segment display
 */
 
-byte seven_seg_digits[10][7] = { { 1,1,1,1,1,1,0 },  // = 0
-                                 { 0,1,1,0,0,0,0 },  // = 1
-                                 { 1,1,0,1,1,0,1 },  // = 2
-                                 { 1,1,1,1,0,0,1 },  // = 3
-                                 { 0,1,1,0,0,1,1 },  // = 4
-                                 { 1,0,1,1,0,1,1 },  // = 5
-                                 { 1,0,1,1,1,1,1 },  // = 6
-                                 { 1,1,1,0,0,0,0 },  // = 7
-                                 { 1,1,1,1,1,1,1 },  // = 8
-                                 { 1,1,1,1,0,1,1 }   // = 9
-                                 };
+byte seven_seg_digits[10][7] = {
+  { 1,1,1,1,1,1,0 },  // = 0
+  { 0,1,1,0,0,0,0 },  // = 1
+  { 1,1,0,1,1,0,1 },  // = 2
+  { 1,1,1,1,0,0,1 },  // = 3
+  { 0,1,1,0,0,1,1 },  // = 4
+  { 1,0,1,1,0,1,1 },  // = 5
+  { 1,0,1,1,1,1,1 },  // = 6
+  { 1,1,1,0,0,0,0 },  // = 7
+  { 1,1,1,1,1,1,1 },  // = 8
+  { 1,1,1,1,0,1,1 }   // = 9
+};
 
 
 int pingPin = 3;      //attach pin 3 to Trig
@@ -41,9 +42,9 @@ void setup() {
   // setup sensor
   pinMode(vccPin, OUTPUT);
   pinMode(gndPin, OUTPUT);
-  
+
   // setup display
-  pinMode(6, OUTPUT);   
+  pinMode(6, OUTPUT);
   pinMode(7, OUTPUT);
   pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
@@ -86,7 +87,7 @@ void loop() {
   long duration, inches, cm;
 
   digitalWrite(vccPin, HIGH);
- 
+
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
   pinMode(pingPin, OUTPUT);
   digitalWrite(pingPin, LOW);
@@ -158,7 +159,7 @@ void loop() {
   Serial.print("; incrementSamples: ");
   Serial.print(incrementSamples);
   Serial.println("");
-  
+
   delay(100);
 }
 

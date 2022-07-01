@@ -9,7 +9,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 void setup() {
   // change reference to internal for temp sensor
   analogReference(INTERNAL);
-  // set up the LCD's number of columns and rows: 
+  // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
   // Print a message to the LCD.
   lcd.print("Temperature:");
@@ -23,7 +23,7 @@ void loop() {
   String units = " C";
   String output = temp + units;
   lcd.print(output);
-  
+
   delay(1000);
 }
 

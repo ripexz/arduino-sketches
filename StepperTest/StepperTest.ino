@@ -4,15 +4,13 @@
    Shows 4-step sequence, Then 1/2 turn and back different speeds
    terry@yourduino.com */
 
-/*-----( Import needed libraries )-----*/
 #include <Stepper.h>
 
-/*-----( Declare Constants, Pin Numbers )-----*/
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode )---
-#define STEPS_PER_MOTOR_REVOLUTION 32   
+#define STEPS_PER_MOTOR_REVOLUTION 32
 
 //---( Steps per OUTPUT SHAFT of gear reduction )---
-#define STEPS_PER_OUTPUT_REVOLUTION 32 * 64  //2048  
+#define STEPS_PER_OUTPUT_REVOLUTION 32 * 64  //2048
 
 /*-----( Declare objects )-----*/
 // create an instance of the stepper class, specifying
@@ -24,27 +22,21 @@
 // here in the sequence 1-3-2-4 for proper sequencing
 Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 8, 10, 9, 11);
 
+int Steps2Take;
 
-/*-----( Declare Variables )-----*/
-int  Steps2Take;
+void setup() {
+  // Nothing  (Stepper Library sets pins as outputs)
+}
 
-void setup()   /*----( SETUP: RUNS ONCE )----*/
-{
-// Nothing  (Stepper Library sets pins as outputs)
-}/*--(end setup )---*/
-
-void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
-{
+void loop() {
   Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION / 2;  // Rotate CW 1/2 turn
-  small_stepper.setSpeed(700);   
+  small_stepper.setSpeed(700);
   small_stepper.step(Steps2Take);
   delay(1000);
-  
-  Steps2Take  =  - STEPS_PER_OUTPUT_REVOLUTION / 2;  // Rotate CCW 1/2 turn  
+
+  Steps2Take  =  - STEPS_PER_OUTPUT_REVOLUTION / 2;  // Rotate CCW 1/2 turn
   small_stepper.setSpeed(700);  // 700 a good max speed??
   small_stepper.step(Steps2Take);
   delay(1000);
 
-}/* --(end main loop )-- */
-
-/* ( THE END ) */
+}

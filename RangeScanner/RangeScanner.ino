@@ -19,24 +19,23 @@ int gndPin = 5;       //attach pin 5 to GND
 void setup() {
   pinMode(vccPin, OUTPUT);
   pinMode(gndPin, OUTPUT);
-  
+
   servo.attach(9);
-  
+
   Serial.begin(9600);
 }
 
-void loop()
-{
+void loop() {
   long duration, cm;
-  
+
   pos = pos + (degs * dir);
   servo.write(pos);
   if (pos == 180 || pos == 0) {
     dir *= -1;
   }
-  
+
   digitalWrite(vccPin, HIGH);
- 
+
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
   pinMode(pingPin, OUTPUT);
   digitalWrite(pingPin, LOW);
@@ -54,7 +53,7 @@ void loop()
   Serial.print(pos);
   Serial.print(" ");
   Serial.println(cm);
-  
+
   delay(100);
 }
 
