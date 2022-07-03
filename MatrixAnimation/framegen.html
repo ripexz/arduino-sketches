@@ -1,0 +1,123 @@
+<!-- Quick buffer data generator for 8x8 sprites, orimarily hacked together with Github Copilot -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Matrix Image Generator</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript">
+      // track if user is dragging and the intended value of 1 or 0
+      var dragging = false;
+      var dragValue = 1;
+
+      // initialise the 8x8 pixel matrix with default value of 0
+      var matrix = new Array(8);
+      for (var i = 0; i < 8; i++) {
+        matrix[i] = new Array(8);
+        for (var j = 0; j < 8; j++) {
+          matrix[i][j] = 0;
+        }
+      }
+
+      // render the matrix to the page as a table with with if 0 and black if 1
+      function renderMatrix() {
+        var html = "<table>";
+        for (var i = 0; i < 8; i++) {
+          html += "<tr>";
+          for (var j = 0; j < 8; j++) {
+            html += "<td id='cell-" + i + "-" + j + "' style='background-color: " + (matrix[i][j] ? "black" : "white") + "'></td>";
+          }
+          html += "</tr>";
+        }
+        html += "</table>";
+        document.getElementById("grid").innerHTML = html;
+
+        // add event listeners to change value and colour on click
+        for (var i = 0; i < 8; i++) {
+          for (var j = 0; j < 8; j++) {
+            var cell = document.getElementById("cell-" + i + "-" + j);
+            cell.addEventListener("mousedown", function() {
+              var parts = this.id.split("-");
+              var i = parseInt(parts[1]);
+              var j = parseInt(parts[2]);
+              matrix[i][j] = (matrix[i][j] + 1) % 2;
+              this.style.backgroundColor = (matrix[i][j] ? "black" : "white");
+              transposeMatrix();
+              // start dragging and set drag value to new value
+              dragging = true;
+              dragValue = matrix[i][j];
+            });
+
+            // add listener to change value and colour on mouseover if dragging
+            cell.addEventListener("mouseover", function() {
+              if (dragging) {
+                var parts = this.id.split("-");
+                var i = parseInt(parts[1]);
+                var j = parseInt(parts[2]);
+                // matrix[i][j] = (matrix[i][j] + 1) % 2;
+                matrix[i][j] = dragValue;
+                this.style.backgroundColor = (matrix[i][j] ? "black" : "white");
+              }
+            });
+
+            // add event listener to stop dragging on mouseup
+            cell.addEventListener("mouseup", function() {
+              dragging = false;
+              dragValue = 1;
+              transposeMatrix();
+            });
+          }
+        }
+      }
+
+      // transpose matrix and render as text in textarea
+      function transposeMatrix() {
+        var html = "uint8_t sprite[COL_SIZE] = {\n";
+        for (var i = 0; i < 8; i++) {
+          html += "  0b";
+          for (var j = 7; j >= 0; j--) {
+            html += matrix[j][i];
+          }
+          if (i < 7) {
+            html += ",\n";
+          } else {
+            html += "\n";
+          }
+        }
+        html += "};";
+        document.getElementById("output").value = html;
+      }
+
+      // initialise the matrix with random values on page load
+      window.onload = function() {
+        renderMatrix();
+        transposeMatrix();
+      }
+    </script>
+    <style>
+      /* make table prettier and easy to read the grid */
+      table, tr, td {
+        border-collapse: collapse;
+        border: 1px solid #666;
+        margin: 0 auto;
+      }
+      /* make grid squares bigger so its easier to click */
+      td {
+        width: 20px;
+        height: 20px;
+      }
+
+      #output {
+        display: block;
+        margin: 0 auto;
+        margin-top: 2em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Editable grid holder -->
+    <div id="grid"></div>
+
+    <!-- Add text area to ouput bytes for each selected column of the grid -->
+    <textarea id="output" rows="10" cols="50"></textarea>
+  </body>
+</html>

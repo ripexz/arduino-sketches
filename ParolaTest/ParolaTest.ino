@@ -44,7 +44,7 @@
 #define MAX_DEVICES 1
 #define CLK_PIN   13
 #define DATA_PIN  11
-#define CS_PIN    3
+#define CS_PIN    10
 
 // HARDWARE SPI
 MD_Parola P = MD_Parola(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);

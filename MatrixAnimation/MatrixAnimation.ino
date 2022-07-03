@@ -27,7 +27,7 @@
 
 #define CLK_PIN   13  // or SCK
 #define DATA_PIN  11  // or MOSI
-#define CS_PIN    3  // or SS
+#define CS_PIN    10  // or SS
 
 // SPI hardware interface
 MD_MAX72XX mx = MD_MAX72XX(HARDWARE_TYPE, CS_PIN, MAX_DEVICES);
@@ -526,6 +526,58 @@ void showCharset(void) {
   mx.update(MD_MAX72XX::ON);
 }
 
+// draw animation
+void animation() {
+  uint8_t sprite1[COL_SIZE] = {
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000010,
+    0b00000111,
+    0b00000010,
+    0b00000010
+  };
+
+  mx.control(MD_MAX72XX::INTENSITY, 1);
+
+  MD_MAX72XX::transformType_t  t[] = {
+    MD_MAX72XX::TSL, MD_MAX72XX::TSL, MD_MAX72XX::TSL, MD_MAX72XX::TSL,
+    MD_MAX72XX::TSL, MD_MAX72XX::TSL, MD_MAX72XX::TSL, MD_MAX72XX::TSL,
+    MD_MAX72XX::TFLR,
+    MD_MAX72XX::TSR, MD_MAX72XX::TSR, MD_MAX72XX::TSR, MD_MAX72XX::TSR,
+    MD_MAX72XX::TSR, MD_MAX72XX::TSR, MD_MAX72XX::TSR, MD_MAX72XX::TSR,
+    // MD_MAX72XX::TRC,
+    // MD_MAX72XX::TSD, MD_MAX72XX::TSD, MD_MAX72XX::TSD, MD_MAX72XX::TSD,
+    // MD_MAX72XX::TSD, MD_MAX72XX::TSD, MD_MAX72XX::TSD, MD_MAX72XX::TSD,
+    // MD_MAX72XX::TFUD,
+    // MD_MAX72XX::TSU, MD_MAX72XX::TSU, MD_MAX72XX::TSU, MD_MAX72XX::TSU,
+    // MD_MAX72XX::TSU, MD_MAX72XX::TSU, MD_MAX72XX::TSU, MD_MAX72XX::TSU,
+    // MD_MAX72XX::TINV,
+    // MD_MAX72XX::TRC, MD_MAX72XX::TRC, MD_MAX72XX::TRC, MD_MAX72XX::TRC,
+    // MD_MAX72XX::TINV
+  };
+
+  PRINTS("\nTransformation1");
+  mx.clear();
+
+  // use the arrow bitmap
+  mx.control(MD_MAX72XX::UPDATE, MD_MAX72XX::OFF);
+  for (uint8_t j=0; j<mx.getDeviceCount(); j++) {
+    mx.setBuffer(((j+1)*COL_SIZE)-1, COL_SIZE, sprite1);
+  }
+  mx.control(MD_MAX72XX::UPDATE, MD_MAX72XX::ON);
+  delay(DELAYTIME);
+
+  // run through the transformations
+  mx.control(MD_MAX72XX::WRAPAROUND, MD_MAX72XX::ON);
+  for (uint8_t i=0; i<(sizeof(t)/sizeof(t[0])); i++) {
+    mx.transform(t[i]);
+    delay(DELAYTIME*4);
+  }
+  mx.control(MD_MAX72XX::WRAPAROUND, MD_MAX72XX::OFF);
+}
+
 void setup() {
   mx.begin();
 
@@ -536,7 +588,8 @@ void setup() {
 }
 
 void loop() {
-#if 1
+  animation();
+#if 0
   scrollText("Graphics");
   zeroPointSet();
   rows();
@@ -549,20 +602,20 @@ void loop() {
   spiral();
 #endif
 
-#if 1
+#if 0
   scrollText("Control");
   intensity();
   scanLimit();
   blinking();
 #endif
 
-#if 1
+#if 0
   scrollText("Transform");
   transformation1();
   transformation2();
 #endif
 
-#if 1
+#if 0
   scrollText("Charset");
   wrapText();
   showCharset();
